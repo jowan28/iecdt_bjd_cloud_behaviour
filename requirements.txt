@@ -1,7 +1,0 @@
-hydra
-matplotlib
-numpy
-torch
-torchvision
-wandb
-omegaconf
