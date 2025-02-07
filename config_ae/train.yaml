@@ -1,0 +1,25 @@
+defaults:
+  - _self_
+  - hydra: default
+  - wandb: default
+  - override hydra/launcher: slurm
+
+name: test
+smoke_test: False
+
+seed: 0
+device: cpu
+log_freq: 100
+
+# Optimization process
+epochs: 10
+learning_rate: 0.001
+batch_size: 16
+
+latent_dim: 128
+
+dataloader_workers: 7
+tiles_path: "/gws/nopw/j04/iecdt/deep_learning_lab/1km_naturalcolor_numpy"
+train_metadata: "/gws/nopw/j04/iecdt/deep_learning_lab/1km_naturalcolor_metadata_time_train.csv"
+val_metadata: "/gws/nopw/j04/iecdt/deep_learning_lab/1km_naturalcolor_metadata_time_val.csv"
+train_rgb_stats: "/gws/nopw/j04/iecdt/deep_learning_lab/1km_naturalcolor_metadata_rgb_stats.npz"
