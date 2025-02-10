@@ -12,7 +12,7 @@ device: cpu
 log_freq: 100
 
 # Optimization process
-epochs: 10
+epochs: 100
 learning_rate: 0.001
 batch_size: 16
 
