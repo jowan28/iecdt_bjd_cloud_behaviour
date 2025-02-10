@@ -1,3 +1,21 @@
+# TODO tasks
+
+`latent_regressor_data_loader.py` :
+- Turn sudo code into code 
+- test
+
+`train_latent_regressor.py`:
+- Build validation function
+- CONFIG file 
+- test 
+
+`latent_regressor.py`:
+- test
+
+
+
+
+
 We want to see how the latent space representation of images reacts to “out of distribution” (OOD) data, and if it is predictable.
 
 We will do this by training a VAE to recreate satellite images whilst compressing/embedding the image into latent space.
