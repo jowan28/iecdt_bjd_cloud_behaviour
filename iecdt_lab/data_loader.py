@@ -23,7 +23,7 @@ class GOESRGBTiles(Dataset):
         self,
         tiles_file: str,
         metadata_file: str,
-        cloud_fraction_threashold: float,
+        cloud_fraction_threshold: float,
         transform=None,
     ) -> None:
         """
@@ -33,10 +33,10 @@ class GOESRGBTiles(Dataset):
                 "tile_id,time_ix,lat_ix,lon_ix,$metric1,$metric2,...". `lat_ix` and `lon_ix`
                 will be strings in the format "slice(start, stop, None)".
         """
+        self.cloud_fraction_threshold = cloud_fraction_threshold
         self.tiles_metadata = self._parse_metadata(metadata_file)
         self.tiles_dir = tiles_file
         self.transform = transform
-        self.cloud_fraction_threashold = cloud_fraction_threashold
 
     def __len__(self) -> int:
         return len(self.tiles_metadata)
@@ -73,7 +73,7 @@ class GOESRGBTiles(Dataset):
                 fractal_dimension=row["fractal_dimension"],
             )
             for _, row in metadata.iterrows()
-            if row["cloud_fraction"] < self.cloud_fraction_threashold
+            if row["cloud_fraction"] < self.cloud_fraction_threshold
         ]
         return metadata
 

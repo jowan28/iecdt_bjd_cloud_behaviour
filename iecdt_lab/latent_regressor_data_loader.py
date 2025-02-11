@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import torch
+import logging
 
 from torch.utils.data import Dataset
 
@@ -32,12 +33,14 @@ class GOESRGBTileLatents(Dataset):
         self.tiles_dataset = iecdt_lab.data_loader.GOESRGBTiles(
             tiles_file=cfg.tiles_path,
             metadata_file=metadata,
-            cloud_fraction_threashold=cfg.cloud_fraction_threashold,
+            cloud_fraction_threshold=cfg.cloud_fraction_threshold,
             transform=transform,
         )
 
         # Get trained encoder
-        self.encoder = iecdt_lab.encoder.load_encoder(cfg.encoder_model_path)
+        self.encoder = iecdt_lab.encoder.load_encoder(
+            cfg.encoder_model_path, cfg.latent_dim
+        )
 
         # Does tile need to_device() ??
         # self.device = cfg.device()

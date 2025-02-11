@@ -71,7 +71,7 @@ def main(cfg: DictConfig):
         )
     )
 
-    model = iecdt_lab.latent_regressor(cfg.latent_dim)
+    model = iecdt_lab.latent_regressor.Latent_regressor(cfg.latent_dim)
     model = model.to(cfg.device)
 
     criterion = nn.MSELoss()
@@ -81,9 +81,10 @@ def main(cfg: DictConfig):
         model.train()
         for i, (batch, labels) in enumerate(train_data_loader):
             optimizer.zero_grad()
-
+            logging.info(f"batch shape: {batch.shape}")
+    
             batch = batch.to(cfg.device)
-            preds = model(batch)
+            preds = model(batch.T)
             loss = criterion(preds, labels)
             loss.backward()
             optimizer.step()
