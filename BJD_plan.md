@@ -1,18 +1,16 @@
 # TODO tasks
 
 `latent_regressor_data_loader.py` :
-- Turn sudo code into code 
 - test
 
 `train_latent_regressor.py`:
-- Build validation function
-- CONFIG file 
 - test 
 
 `latent_regressor.py`:
 - test
 
-
+`latent_regressor config`
+- test
 
 
 
