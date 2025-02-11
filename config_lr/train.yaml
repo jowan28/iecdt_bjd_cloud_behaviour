@@ -26,4 +26,4 @@ train_rgb_stats: "/gws/nopw/j04/iecdt/deep_learning_lab/1km_naturalcolor_metadat
 test_metadata: "/gws/nopw/j04/iecdt/deep_learning_lab/1km_naturalcolor_metadata_time_test.csv"
 
 cloud_fraction_threshold: 0.7
-encoder_model_path: "????"
+encoder_model_path: "/home/users/bradlesc/iecdt_bjd_cloud_behaviour/encoder.pth"

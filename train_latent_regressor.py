@@ -81,10 +81,10 @@ def main(cfg: DictConfig):
         model.train()
         for i, (batch, labels) in enumerate(train_data_loader):
             optimizer.zero_grad()
-            logging.info(f"batch shape: {batch.shape}")
-    
+
             batch = batch.to(cfg.device)
-            preds = model(batch.T)
+            labels = labels.float().to(cfg.device)
+            preds = model(batch).squeeze()
             loss = criterion(preds, labels)
             loss.backward()
             optimizer.step()

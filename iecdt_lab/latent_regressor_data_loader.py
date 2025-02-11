@@ -38,9 +38,7 @@ class GOESRGBTileLatents(Dataset):
         )
 
         # Get trained encoder
-        self.encoder = iecdt_lab.encoder.load_encoder(
-            cfg.encoder_model_path, cfg.latent_dim
-        )
+        self.encoder = iecdt_lab.encoder.load_encoder(cfg)
 
         # Does tile need to_device() ??
         # self.device = cfg.device()
@@ -53,13 +51,12 @@ class GOESRGBTileLatents(Dataset):
 
         # Get target tile
         tile, metadata = self.tiles_dataset[index]
-
         # Get latent representation
         with torch.no_grad():
-            latent = self.encoder(tile)
+            latent = self.encoder(tile.unsqueeze(0))
 
         # Get cloud fraction
-        cloud_fraction = metadata.cloud_fraction
+        cloud_fraction = metadata[1]
 
         return latent, cloud_fraction
 
