@@ -14,7 +14,7 @@ class Latent_regressor(nn.Module):
         Initilising latent regressor class. This consists of a single layer with a single node 
         """
         super().__init__()
-        self.model = nn.sequential(
+        self.model = nn.Sequential(
             nn.Linear(latent_dim, 1, bias=False),
         )
 

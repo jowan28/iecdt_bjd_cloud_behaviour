@@ -1,19 +1,83 @@
+import numpy as np
+import pandas as pd
+import torch
+import logging
+
+from torch.utils.data import Dataset
+
+import iecdt_lab
 
 
-def latent_regressor_loader(cfg)
-    # create data loader 
+class GOESRGBTileLatents(Dataset):
+    def __init__(self, cfg, transform, train=False, val=False, test=False) -> None:
+        """
+        Arguments:
+        cfg -- config file
+        transform -- transform to be applied to large images to get tiles
+        train -- bool to indicate if train dataset is required
+        val -- bool to indicate if val dataset is required
+        test -- bool to indicate if test dataset is required
+        """
+
+        if sum([train, val, test]) > 1:
+            raise ValueError(
+                "Only one of 'train', 'val', or 'test' can be True at a time."
+            )
+
+        metadata = {
+            train: cfg.train_metadata,
+            val: cfg.val_metadata,
+            test: cfg.test_metadata,
+        }.get(True)
+
+        self.tiles_dataset = iecdt_lab.data_loader.GOESRGBTiles(
+            tiles_file=cfg.tiles_path,
+            metadata_file=metadata,
+            cloud_fraction_threshold=cfg.cloud_fraction_threshold,
+            transform=transform,
+        )
+
+        # Get trained encoder
+        self.encoder = iecdt_lab.encoder.load_encoder(
+            cfg.encoder_model_path, cfg.latent_dim
+        )
+
+        # Does tile need to_device() ??
+        # self.device = cfg.device()
+
+    def __len__(self) -> int:
+        return len(self.tiles_dataset)
+
+    def __getitem__(self, index: int):
+        self.encoder.eval()
+
+        # Get target tile
+        tile, metadata = self.tiles_dataset[index]
+
+        # Get latent representation
+        with torch.no_grad():
+            latent = self.encoder(tile)
+
+        # Get cloud fraction
+        cloud_fraction = metadata.cloud_fraction
+
+        return latent, cloud_fraction
 
 
-    # Get latent space values 
-        # get tiles 
-            # call data loader
-        # for item 
-        #     latent = encoder(item) 
-        # get model 
-        # inference 
-    
-    # Get cc 
-        # load from tiles
+def get_latent_regressor_data_loader(cfg, transform):
+    """
+    Returns train and val data loaders
+    """
+    train_ds = GOESRGBTileLatents(cfg, transform, train=True)
 
+    train_data_loader = torch.utils.data.DataLoader(
+        train_ds, cfg.batch_size, shuffle=True, num_workers=cfg.dataloader_workers
+    )
 
-    # return latent, cc 
+    val_ds = GOESRGBTileLatents(cfg, transform, val=True)
+
+    val_data_loader = torch.utils.data.DataLoader(
+        val_ds, cfg.batch_size, shuffle=True, num_workers=cfg.dataloader_workers
+    )
+
+    return train_data_loader, val_data_loader

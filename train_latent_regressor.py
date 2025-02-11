@@ -15,14 +15,31 @@ from torch import nn
 import iecdt_lab.latent_regressor
 
 
-# TODO: VALIDATION, CONFIG FILE 
+# TODO: CONFIG FILE
+
+
+def lr_validation(cfg, model, test_data_loader, data_stats):
+    model.eval()
+    running_mse = 0
+    num_batches = len(test_data_loader)
+    with torch.no_grad():
+        for i, (batch, labels) in enumerate(test_data_loader):
+            batch = batch.to(cfg.device)
+            predictions = model(batch)
+            running_mse += torch.mean((predictions - labels) ** 2).cpu().numpy()
+
+            if cfg.smoke_test and i == 10:
+                num_batches = i + 1
+                break
+    val_mse = running_mse / num_batches
+    return val_mse
+
 
 @hydra.main(version_base=None, config_path="config_lr", config_name="train")
 def main(cfg: DictConfig):
     random.seed(cfg.seed)
     np.random.seed(cfg.seed)
     torch.manual_seed(cfg.seed)
-
 
     wandb.login(key=os.environ["WANDB_API_KEY"])
 
@@ -48,16 +65,13 @@ def main(cfg: DictConfig):
         ]
     )
 
-    train_data_loader, val_data_loader = iecdt_lab.latent_regressor_loader(train=True,
-                                                                           tiles_path=cfg.tiles_path, 
-                                                                           train_metadata=cfg.train_metadata,
-                                                                           val_metadata=cfg.val_metadata,
-                                                                           batch_size=cfg.batch_size,
-                                                                           data_transforms=data_transforms,
-                                                                           dataloader_workers=cfg.dataloade_workers,)
+    train_data_loader, val_data_loader = (
+        iecdt_lab.latent_regressor_data_loader.get_latent_regressor_data_loader(
+            cfg, transform=data_transforms
+        )
+    )
 
-    
-    model = iecdt_lab.latent_regressor(cfg.latent_dim)
+    model = iecdt_lab.latent_regressor.Latent_regressor(cfg.latent_dim)
     model = model.to(cfg.device)
 
     criterion = nn.MSELoss()
@@ -67,9 +81,10 @@ def main(cfg: DictConfig):
         model.train()
         for i, (batch, labels) in enumerate(train_data_loader):
             optimizer.zero_grad()
-
+            logging.info(f"batch shape: {batch.shape}")
+    
             batch = batch.to(cfg.device)
-            preds = model(batch)
+            preds = model(batch.T)
             loss = criterion(preds, labels)
             loss.backward()
             optimizer.step()
@@ -82,20 +97,15 @@ def main(cfg: DictConfig):
 
             if cfg.smoke_test and i == 50:
                 break
-            
 
         torch.save(model.state_dict(), "model.pth")
-        
-        eval_fig, val_mse = validation(cfg, model, val_data_loader, data_stats)
-        wandb.log({"predictions": eval_fig, "loss/val": val_mse})
+
+        val_mse = lr_validation(cfg, model, val_data_loader, data_stats)
+        wandb.log({"loss/val": val_mse})
 
         if cfg.smoke_test:
             break
 
-    
-
 
 if __name__ == "__main__":
     main()
-
-
