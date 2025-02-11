@@ -1,19 +1,7 @@
 # TODO tasks
 
-`latent_regressor_data_loader.py` :
-- Turn sudo code into code 
-- test
-
-`train_latent_regressor.py`:
-- Build validation function
-- CONFIG file 
-- test 
-
-`latent_regressor.py`:
-- test
-
-
-
+- Visual test that encoder works 
+- Data analysis script for latent regreressor 
 
 
 We want to see how the latent space representation of images reacts to “out of distribution” (OOD) data, and if it is predictable.

@@ -19,7 +19,13 @@ class RGBTile:
 
 
 class GOESRGBTiles(Dataset):
-    def __init__(self, tiles_file: str, metadata_file: str, transform=None) -> None:
+    def __init__(
+        self,
+        tiles_file: str,
+        metadata_file: str,
+        cloud_fraction_threshold: float,
+        transform=None,
+    ) -> None:
         """
         Args:
             tiles_file (str): Path to a directory containing all the tiles.
@@ -27,6 +33,7 @@ class GOESRGBTiles(Dataset):
                 "tile_id,time_ix,lat_ix,lon_ix,$metric1,$metric2,...". `lat_ix` and `lon_ix`
                 will be strings in the format "slice(start, stop, None)".
         """
+        self.cloud_fraction_threshold = cloud_fraction_threshold
         self.tiles_metadata = self._parse_metadata(metadata_file)
         self.tiles_dir = tiles_file
         self.transform = transform
@@ -66,6 +73,7 @@ class GOESRGBTiles(Dataset):
                 fractal_dimension=row["fractal_dimension"],
             )
             for _, row in metadata.iterrows()
+            if row["cloud_fraction"] < self.cloud_fraction_threshold
         ]
         return metadata
 
@@ -87,10 +95,12 @@ def get_data_loaders(
     batch_size,
     data_transforms,
     dataloader_workers,
+    cloud_fraction_threshold,
 ):
     train_ds = GOESRGBTiles(
         tiles_file=tiles_path,
         metadata_file=train_metadata,
+        cloud_fraction_threshold=cloud_fraction_threshold,
         transform=data_transforms,
     )
     train_data_loader = torch.utils.data.DataLoader(
@@ -102,6 +112,7 @@ def get_data_loaders(
     val_ds = GOESRGBTiles(
         tiles_file=tiles_path,
         metadata_file=val_metadata,
+        cloud_fraction_threshold=cloud_fraction_threshold,
         transform=data_transforms,
     )
     val_data_loader = torch.utils.data.DataLoader(
