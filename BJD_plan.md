@@ -1,3 +1,9 @@
+# TODO tasks
+
+- Visual test that encoder works 
+- Data analysis script for latent regreressor 
+
+
 We want to see how the latent space representation of images reacts to “out of distribution” (OOD) data, and if it is predictable.
 
 We will do this by training a VAE to recreate satellite images whilst compressing/embedding the image into latent space.

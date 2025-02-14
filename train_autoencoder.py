@@ -89,6 +89,7 @@ def main(cfg: DictConfig):
         batch_size=cfg.batch_size,
         data_transforms=data_transforms,
         dataloader_workers=cfg.dataloader_workers,
+        cloud_fraction_threshold=cfg.cloud_fraction_threshold
     )
 
     model = iecdt_lab.autoencoder.CNNAutoencoder(latent_dim=cfg.latent_dim)

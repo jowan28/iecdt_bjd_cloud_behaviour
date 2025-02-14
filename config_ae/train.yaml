@@ -24,6 +24,8 @@ train_metadata: "/gws/nopw/j04/iecdt/deep_learning_lab/1km_naturalcolor_metadata
 val_metadata: "/gws/nopw/j04/iecdt/deep_learning_lab/1km_naturalcolor_metadata_time_val.csv"
 train_rgb_stats: "/gws/nopw/j04/iecdt/deep_learning_lab/1km_naturalcolor_metadata_rgb_stats.npz"
 
+cloud_fraction_threshold: 0.7
+
 vae_beta: 1
 normalise: True
 lim_decoder: True
