@@ -1,1 +1,1 @@
-from . import autoencoder, data_loader
+from . import autoencoder, data_loader, VAE
